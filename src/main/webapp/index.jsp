@@ -41,10 +41,12 @@
 <body>
 <%
     if(session.getAttribute("Registration Error") != null){%>
-<div class="alert alert-primary" role="alert">
+<div class="alert alert-success" role="alert">
     <%=session.getAttribute("Registration Error").toString()%>
 </div>
 <%}
+    //delete session
+    session.invalidate();
 %>
 <section class="container main-content">
     <div class="flex-item-left">

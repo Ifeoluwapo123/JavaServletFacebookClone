@@ -6,6 +6,8 @@ import com.example.FacebookClone.utils.PasswordHashing;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDatabase {
     private Connection dbConnection;
@@ -67,6 +69,61 @@ public class UserDatabase {
                 }
             }
         }catch(Exception e){
+        }
+
+        return user;
+    }
+
+    public List<User> getUsers(){
+        User user = null;
+        List users = new ArrayList();
+
+        try {
+            String query = "select * from users";
+            PreparedStatement preparedStatement = this.dbConnection.prepareStatement(query);
+
+            ResultSet result = preparedStatement.executeQuery();
+            while(result.next()){
+                user = new User();
+
+                user.setId(result.getInt("id"));
+                user.setFirstname(result.getString("firstname"));
+                user.setSurname(result.getString("surname"));
+                user.setPassword(result.getString("password"));
+                user.setNumEmail(result.getString("numEmail"));
+
+                users.add(user);
+            }
+            return users;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+    public User getUserById(int id){
+        User user = null;
+
+        try {
+            String query = "select * from users where id="+id;
+            PreparedStatement preparedStatement = this.dbConnection.prepareStatement(query);
+
+            ResultSet result = preparedStatement.executeQuery();
+
+            if(result.next()){
+                user = new User();
+
+                user.setId(result.getInt("id"));
+                user.setFirstname(result.getString("firstname"));
+                user.setSurname(result.getString("surname"));
+                user.setPassword(result.getString("password"));
+                user.setNumEmail(result.getString("numEmail"));
+
+                return user;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return user;
