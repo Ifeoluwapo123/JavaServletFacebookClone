@@ -4,23 +4,25 @@ function del(postId, userId, data){
 
     console.log(postId);
     console.log(comment);
-    console.log(data)
+    console.log(data);
 
-    // if(delCom){
-    //     $.ajax({
-    //         type: 'POST',
-    //         url: '/DeleteCommentServlet',
-    //         data: {"postId": postId, "userId":userId},
-    //
-    //         success: function(data){
-    //             alert(data);
-    //             window.location.reload();
-    //         },
-    //         error: function(){
-    //             alert('error deleting post');
-    //         }
-    //     });
-    // }
+    let delCom = prompt("Are sure you want to delete this comment");
+
+    if(delCom){
+        $.ajax({
+            type: 'POST',
+            url: '/DeleteCommentServlet',
+            data: {"postId": postId, "userId":userId},
+
+            success: function(data){
+                alert(data);
+                window.location.reload();
+            },
+            error: function(){
+                alert('error deleting post');
+            }
+        });
+    }
 }
 
 function edit(postId, userId){
