@@ -18,21 +18,32 @@ public class DeletePostServlet extends HttpServlet {
 
     }
 
+    /**
+     * Servlet method for post deletion
+     * @param request
+     * @param response
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try(PrintWriter out = response.getWriter()) {
+            response.setContentType("text/plain");
+            response.setCharacterEncoding("UTF-8");
+
+            // post id from client
             int postId = Integer.parseInt(request.getParameter("postId"));
 
+            //get current user in session
+            HttpSession session = request.getSession();
+            User user = (User) session.getAttribute("user");
+
+            //comment DOA
             PostDatabase postDatabase = new PostDatabase(DbConnection.getConnection());
 
-            if(postDatabase.deletePost(postId)){
+            if(postDatabase.deletePost(user.getId(), postId)){
                 response.getWriter().write("Success deleting post");
             }else{
-                out.print("500 error");
-                response.getWriter().write("Failed do delete post");
+                response.getWriter().write("Failed do delete post or you don't have access to delete this post");
             }
-
-            response.sendRedirect("home.jsp");
 
         }catch (Exception e){
             e.printStackTrace();

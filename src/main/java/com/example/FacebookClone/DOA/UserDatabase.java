@@ -2,13 +2,13 @@ package com.example.FacebookClone.DOA;
 
 import com.example.FacebookClone.model.User;
 import com.example.FacebookClone.utils.PasswordHashing;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Create and Delete operations on the User table
+ * */
 public class UserDatabase {
     private Connection dbConnection;
 
@@ -16,9 +16,15 @@ public class UserDatabase {
         this.dbConnection = connection;
     }
 
+    /**
+     * CREATE operation on User
+     * @param user
+     * @return boolean(true for successful creation and false on failure to create)
+     * */
     public boolean registerUser(User user){
         boolean set = false;
         try{
+
             String query = "insert into users(firstname,surname,password,numEmail,dob,gender) " +
                     "values (?,?,?,?,?,?)";
 
@@ -39,6 +45,12 @@ public class UserDatabase {
         return set;
     }
 
+    /**
+     * Get operation on User
+     * @param numEmail
+     * @param password
+     * @return User object
+     * */
     public User loginUser(String numEmail, String password){
         User user = null;
         String query = "";
@@ -60,8 +72,9 @@ public class UserDatabase {
                 user.setSurname(result.getString("surname"));
                 user.setPassword(result.getString("password"));
                 user.setNumEmail(result.getString("numEmail"));
+                user.setGender(result.getString("gender"));
+                user.setDob(result.getString("dob"));
 
-                //decrypt password
                 String decryptPass = PasswordHashing.decryptPassword(result.getString("password"));
 
                 if(!decryptPass.equals(password)){
@@ -74,58 +87,28 @@ public class UserDatabase {
         return user;
     }
 
-    public List<User> getUsers(){
-        User user = null;
-        List users = new ArrayList();
-
+    /**
+     * DELETE operation on User
+     * @param email
+     * @return boolean(true for successful deletion and false on failure to delete)
+     * */
+    public boolean deleteUser(String email){
+        boolean success =  false;
         try {
-            String query = "select * from users";
-            PreparedStatement preparedStatement = this.dbConnection.prepareStatement(query);
+            String query = "delete from users where numEmail= ?";
+            PreparedStatement prepared = this.dbConnection.prepareStatement(query);
+            prepared.setString(1, email);
 
-            ResultSet result = preparedStatement.executeQuery();
-            while(result.next()){
-                user = new User();
+            int result = prepared.executeUpdate();
 
-                user.setId(result.getInt("id"));
-                user.setFirstname(result.getString("firstname"));
-                user.setSurname(result.getString("surname"));
-                user.setPassword(result.getString("password"));
-                user.setNumEmail(result.getString("numEmail"));
-
-                users.add(user);
+            if(result > 0) {
+                success = true;
             }
-            return users;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return users;
-    }
-
-    public User getUserById(int id){
-        User user = null;
-
-        try {
-            String query = "select * from users where id="+id;
-            PreparedStatement preparedStatement = this.dbConnection.prepareStatement(query);
-
-            ResultSet result = preparedStatement.executeQuery();
-
-            if(result.next()){
-                user = new User();
-
-                user.setId(result.getInt("id"));
-                user.setFirstname(result.getString("firstname"));
-                user.setSurname(result.getString("surname"));
-                user.setPassword(result.getString("password"));
-                user.setNumEmail(result.getString("numEmail"));
-
-                return user;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return user;
+        return success;
     }
 }

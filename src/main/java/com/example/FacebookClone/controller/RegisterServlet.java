@@ -18,6 +18,11 @@ public class RegisterServlet extends HttpServlet {
 
     }
 
+    /**
+     * Servlet method for user registration
+     * @param request
+     * @param response
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
@@ -37,6 +42,7 @@ public class RegisterServlet extends HttpServlet {
         String dob = request.getParameter("date");
         String gender = request.getParameter("gender");
 
+        //=============================== data validation ===================================/
         //check length of data
         if (firstname.length() < 3) {
             httpSession.setAttribute("Registration Error", " firstname cannot be less than 3 character long");
@@ -56,20 +62,14 @@ public class RegisterServlet extends HttpServlet {
             response.sendRedirect("index.jsp");
             return;
         }
+        //================================== end of validation ====================================//
 
         //Password encryption
         password = PasswordHashing.encryptPassword(password);
 
-
-        System.out.println("Firstname "+firstname);
-        System.out.println("surname "+surname);
-        System.out.println("numEmail "+numEmail);
-        System.out.println("password "+password);
-        System.out.println("dob "+dob);
-        System.out.println("gender "+gender);
-
         User userModel = new User(firstname, surname, numEmail, password, dob, gender);
 
+        //from user DOA
         UserDatabase regUser = new UserDatabase(DbConnection.getConnection());
 
         if (!regUser.registerUser(userModel)) {

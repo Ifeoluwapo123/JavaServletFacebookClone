@@ -1,4 +1,7 @@
-<%@ page import="com.example.FacebookClone.model.User" %><%--
+<%@ page import="com.example.FacebookClone.model.User" %>
+<%@ page import="com.example.FacebookClone.model.Post" %>
+<%@ page import="com.example.FacebookClone.DOA.PostDatabase" %>
+<%@ page import="com.example.FacebookClone.dbConnectionProvider.DbConnection" %><%--
   Created by IntelliJ IDEA.
   User: protek
   Date: 5/4/21
@@ -30,8 +33,22 @@
             integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
             crossorigin="anonymous"
     ></script>
+    <script src="${pageContext.request.contextPath}/js/edit.js"></script>
 </head>
 <body>
+<%
+    User user = (User) session.getAttribute("user");
+    if(user == null){
+        session.setAttribute("Registration Error", "!!!Please Login first");
+        response.sendRedirect("index.jsp");
+    }
+
+    String query = request.getQueryString();
+    int postId = Integer.parseInt(query.substring(query.indexOf("=")+1));
+
+    PostDatabase postDatabase = new PostDatabase(DbConnection.getConnection());
+    Post post = postDatabase.getPostById(postId);
+%>
     <nav style="background: #3b5998" class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="#" style="color:#fff;"><h1>Facebook</h1></a>
@@ -47,34 +64,28 @@
             </div>
         </div>
     </nav>
-<%--    <%User user = (User) session.getAttribute("user");%>--%>
-<%--        <%--%>
-<%--            if(user != null){%>--%>
-<%--        <h4 style="color: #fff">Welcome <%= user.getSurname() %></h4>--%>
-<%--    <%}--%>
-<%--    %>--%>
     <section style="margin: 80px auto; width: 60%">
         <form action="/UpdatePostServlet" method="POST">
             <div class="mb-3">
                 <label for="title" class="form-label">Post Title</label>
-                <input type="text" class="form-control" id="title" name="title" aria-describedby="emailHelp">
+                <input type="text" class="form-control" id="title" value="<%=post.getTitle()%>" name="title" aria-describedby="emailHelp">
                 <div class="form-text">Edit title</div>
             </div>
             <div class="mb-3">
                 <label for="body" class="form-label">Post Body</label>
-                <input type="text" class="form-control" id="body" name="body" aria-describedby="emailHelp">
+                <input type="text" class="form-control" id="body" value="<%=post.getBody()%>" name="body" aria-describedby="emailHelp">
                 <div class="form-text">Edit body</div>
             </div>
             <label for="body" class="form-label">Post id</label>
-            <input id="input" type="text" name="postId"/>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <input id="input" type="text" name="postId" disabled/>
+
+            <button type="submit" class="btn btn-primary"
+                    <%
+                        if(!post.getNumEmail().equals(user.getNumEmail())){%>
+                    disabled
+                    <%}%>
+            >Submit</button>
         </form>
     </section>
-<script>
-    window.onload = ()=> {
-        const params = new URLSearchParams(window.location.search);
-        document.getElementById("input").value =  params.get("post");
-    }
-</script>
 </body>
 </html>

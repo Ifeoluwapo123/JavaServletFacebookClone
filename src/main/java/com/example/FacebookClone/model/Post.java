@@ -6,6 +6,7 @@ public class Post {
     private String body;
     private String imageName;
     private String name;
+    private String numEmail;
     private int noLikes;
     private int noComments;
     private boolean likedPost;
@@ -52,11 +53,21 @@ public class Post {
         return name;
     }
 
+
     public Post(String title, String body, String imageName) {
         this.title = title;
         this.body = body;
         this.imageName = imageName;
     }
+
+    public String getNumEmail() {
+        return numEmail;
+    }
+
+    public void setNumEmail(String numEmail) {
+        this.numEmail = numEmail;
+    }
+
 
     public Post(){}
 

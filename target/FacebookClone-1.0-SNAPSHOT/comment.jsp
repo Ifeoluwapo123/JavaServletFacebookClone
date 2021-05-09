@@ -1,8 +1,9 @@
 <%@ page import="com.example.FacebookClone.model.User" %>
-<%@ page import="com.example.FacebookClone.DOA.Comment" %>
+<%@ page import="com.example.FacebookClone.model.Comment" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.example.FacebookClone.DOA.PostDatabase" %>
-<%@ page import="com.example.FacebookClone.dbConnectionProvider.DbConnection" %><%--
+<%@ page import="com.example.FacebookClone.dbConnectionProvider.DbConnection" %>
+<%@ page import="com.example.FacebookClone.DOA.CommentDatabase" %><%--
   Created by IntelliJ IDEA.
   User: protek
   Date: 5/4/21
@@ -34,14 +35,22 @@
             integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
             crossorigin="anonymous"
     ></script>
+    <script src="${pageContext.request.contextPath}/js/comment.js"></script>
 </head>
 <body>
 <%
     String query = request.getQueryString();
     int postId = Integer.parseInt(query.substring(query.indexOf("=")+1));
-    PostDatabase postDatabase = new PostDatabase(DbConnection.getConnection());
-    List<Comment> commentList = postDatabase.getComments(postId);
+    CommentDatabase commentDatabase = new CommentDatabase(DbConnection.getConnection());
+    List<Comment> commentList = commentDatabase.getComments(postId);
+
+    User user = (User) session.getAttribute("user");
+    if(user == null){
+        session.setAttribute("Registration Error", "!!!Please Login first");
+        response.sendRedirect("index.jsp");
+    }
 %>
+
 <nav style="background: #3b5998" class="navbar navbar-expand-lg">
     <div class="container-fluid">
         <a class="navbar-brand" href="#" style="color:#fff;"><h1>Facebook</h1></a>
@@ -57,34 +66,41 @@
         </div>
     </div>
 </nav>
-<%--    <%User user = (User) session.getAttribute("user");%>--%>
-<%--        <%--%>
-<%--            if(user != null){%>--%>
-<%--        <h4 style="color: #fff">Welcome <%= user.getSurname() %></h4>--%>
-<%--    <%}--%>
-<%--    %>--%>
-<section style="margin: 60px auto; width: 70%; border: 2px solid #3b5998; padding: 15px">
+<section style="margin: 60px auto; width: 60%; border: 2px solid #3b5998; padding: 15px">
     <%
-        if(commentList.size() != 0){
-            for (Comment comment:commentList) {%>
-                <p><%=comment.getUsername() %> </p>
-                <h4> <p><%=comment.getTitle() %> </p></h4>
-                <p></p>
-                <p> <p><%=comment.getComment()%> </p></p>
-                <p></p>
+        if(commentList.size() != 0){%>
+             <img src="./image/<%=commentList.get(0).getPostImage()%>" width="100%" height="60%"/>
+             <h3>Post Title: <%=commentList.get(0).getTitle() %></h3>
+             <%for (Comment comment:commentList) {%>
+                <hr/>
+                <h6>Name: <em><%=comment.getUsername()%> </em></h6>
+                <p><%=comment.getComment()%> </p>
+                <p><em>Edit Comment</em></p>
+                <textarea class="edit-comment"
+                          placeholder="Edit comment here...<%= comment.getUsername() %>">
+                </textarea>
+
+                <button onclick="del(<%=postId%>, <%=comment.getUserId()%>)" class="btn btn-primary btn-md mt-3 btn-block"
+                    <%
+                        if(comment.getUserId() != user.getId()){%>
+                         disabled
+                    <%}%>>
+                    Delete
+                </button>
+                <button onclick="edit(<%=postId%>, <%=comment.getUserId()%>)" class="btn btn-primary btn-md mt-3 btn-block"
+                    <%
+                        if(comment.getUserId() != user.getId()){%>
+                    disabled
+                    <%}%>>
+                    Edit
+                </button>
                 <hr/>
             <%}
         }else{ %>
             <h1>No Comments !!!!</h1>
         <%}
     %>
-
 </section>
-<script>
-    window.onload = ()=> {
-        const params = new URLSearchParams(window.location.search);
-        document.getElementById("input").value =  params.get("post");
-    }
 </script>
 </body>
 </html>

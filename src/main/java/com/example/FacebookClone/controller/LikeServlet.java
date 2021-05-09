@@ -1,5 +1,6 @@
 package com.example.FacebookClone.controller;
 
+import com.example.FacebookClone.DOA.LikeDataBase;
 import com.example.FacebookClone.DOA.PostDatabase;
 import com.example.FacebookClone.dbConnectionProvider.DbConnection;
 import com.example.FacebookClone.model.User;
@@ -17,6 +18,11 @@ public class LikeServlet extends HttpServlet {
 
     }
 
+    /**
+     * Servlet method for like
+     * @param request
+     * @param response
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try(PrintWriter out = response.getWriter();){
@@ -24,18 +30,18 @@ public class LikeServlet extends HttpServlet {
             out.println("<h1>" + "Servlet Registration example" + "</h1>");
             out.println("</body></html>");
 
-            HttpSession httpSession = request.getSession();
-            //fetch data from post form
+            //fetch data from post form client
             int action = Integer.parseInt(request.getParameter("action"));
             int postId = Integer.parseInt(request.getParameter("postId"));
-            int userId = Integer.parseInt(request.getParameter("userId"));
+
+            //get current user
+            HttpSession httpSession = request.getSession();
             User user = (User) httpSession.getAttribute("user");
-            int currentUser = user.getId();
-            response.getWriter().write(action+postId+userId);
 
-            PostDatabase postDatabase = new PostDatabase(DbConnection.getConnection());
+            //from like DOA
+            LikeDataBase likeDataBase = new LikeDataBase(DbConnection.getConnection());
 
-            if(postDatabase.likePost(currentUser, postId, action)){
+            if(likeDataBase.likePost(user.getId(), postId, action)){
                 response.getWriter().write("Success liking/disliking post");
             }else{
                 out.print("500 error");

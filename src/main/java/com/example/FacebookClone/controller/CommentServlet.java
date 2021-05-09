@@ -1,5 +1,6 @@
 package com.example.FacebookClone.controller;
 
+import com.example.FacebookClone.DOA.CommentDatabase;
 import com.example.FacebookClone.DOA.PostDatabase;
 import com.example.FacebookClone.dbConnectionProvider.DbConnection;
 import com.example.FacebookClone.model.Post;
@@ -20,6 +21,11 @@ public class CommentServlet extends HttpServlet {
 
     }
 
+    /**
+     * Servlet method for comment creation
+     * @param request
+     * @param response
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try(PrintWriter out = response.getWriter();){
@@ -27,29 +33,29 @@ public class CommentServlet extends HttpServlet {
             out.println("<h1>" + "Servlet Registration example" + "</h1>");
             out.println("</body></html>");
 
-            System.out.println("hjasgjhk,hjfasbhjas");
-
-            HttpSession httpSession = request.getSession();
-
             //fetch data from post form
             String comment = request.getParameter("comment");
             int postId = Integer.parseInt(request.getParameter("postId"));
+
+            //get current user
+            HttpSession httpSession = request.getSession();
             User currentUser = (User) httpSession.getAttribute("user");
             int userId = currentUser.getId();
 
-           PostDatabase postDatabase = new PostDatabase(DbConnection.getConnection());
+            //from the comment DOA
+            CommentDatabase commentDatabaseDatabase = new CommentDatabase(DbConnection.getConnection());
 
-           if(postDatabase.createComment(userId,postId,comment)){
+            if(commentDatabaseDatabase.createComment(userId,postId,comment)){
                out.println("File uploaded to this directory");
                httpSession.setAttribute("message", "successful");
                httpSession.setAttribute("user",currentUser);
-           }else{
+            }else{
                out.print("500 error");
                httpSession.setAttribute("user",currentUser);
                httpSession.setAttribute("message", "Error posting comment");
-           }
+            }
 
-           response.sendRedirect("home.jsp");
+            response.sendRedirect("home.jsp");
 
         }catch (Exception e){
             System.out.println(e.getMessage());

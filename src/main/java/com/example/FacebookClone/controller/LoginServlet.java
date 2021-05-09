@@ -17,21 +17,26 @@ public class LoginServlet extends HttpServlet {
 
     }
 
+    /**
+     * Servlet method for user login
+     * @param request
+     * @param response
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
+        HttpSession httpSession = request.getSession();
         out.println("<html><body>");
         out.println("<h1>" + "FACEBOOK CLONE" + "</h1>");
         out.println("</body></html>");
 
-        HttpSession httpSession = request.getSession();
-
+        //get request data
         String numEmail = request.getParameter("numEmail");
         String password = request.getParameter("password");
 
+        //from user DOA
         UserDatabase userDatabase = new UserDatabase(DbConnection.getConnection());
-
         User user = userDatabase.loginUser(numEmail, password);
 
         if(user != null){

@@ -23,13 +23,16 @@ public class UpdatePostServlet extends HttpServlet {
             out.println("<html><body>");
             out.println("<h1>" + "update post" + "</h1>");
             out.println("</body></html>");
-
             HttpSession httpSession = request.getSession();
+
+            //requests from the client
             String title = request.getParameter("title");
             String body = request.getParameter("body");
             int postId = Integer.parseInt(request.getParameter("postId"));
 
             Post post = new Post(title, body);
+
+            //from post database
             PostDatabase postDatabase = new PostDatabase(DbConnection.getConnection());
 
             if(postDatabase.updatePost(postId, post)){

@@ -1,9 +1,19 @@
-package com.example.FacebookClone.DOA;
+package com.example.FacebookClone.model;
 
 public class Comment {
     private String title;
     private String postImage;
     private String username;
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     private String comment;
 
     public Comment() {
@@ -46,5 +56,15 @@ public class Comment {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "title='" + title + '\'' +
+                ", postImage='" + postImage + '\'' +
+                ", username='" + username + '\'' +
+                ", comment='" + comment + '\'' +
+                '}';
     }
 }

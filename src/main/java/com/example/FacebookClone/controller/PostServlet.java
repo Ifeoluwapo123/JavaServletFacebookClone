@@ -18,6 +18,11 @@ public class PostServlet extends HttpServlet {
 
     }
 
+    /**
+     * Servlet method for posting
+     * @param request
+     * @param response
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
@@ -34,20 +39,22 @@ public class PostServlet extends HttpServlet {
             String imageName = part.getSubmittedFileName();
             String title = request.getParameter("title");
             String body = request.getParameter("body");
+
+            //get current user from session
             User currentUser = (User) httpSession.getAttribute("user");
             int userId = currentUser.getId();
 
+            //check if image name not empty
             if(imageName.equals("")){
                 httpSession.setAttribute("message", "Enter a picture");
                 response.sendRedirect("home.jsp");
                 return;
             }
 
+            //path to store image
             String path = "/Users/protek/Desktop/Facebook Clone Project/src/main/webapp/image"+File.separator+imageName;
-            System.out.println(path);
 
             InputStream in = part.getInputStream();
-
             boolean success = uploadFile(in, path);
 
             if(success){
@@ -71,6 +78,12 @@ public class PostServlet extends HttpServlet {
         }
     }
 
+    /**
+     * method for reading images to a specific path
+     * @param in
+     * @param path
+     * @return boolean
+     */
     public boolean uploadFile(InputStream in, String path){
         boolean test = false;
 

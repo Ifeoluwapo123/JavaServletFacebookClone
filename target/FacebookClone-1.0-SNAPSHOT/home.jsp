@@ -29,15 +29,13 @@
             integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
             crossorigin="anonymous"
     ></script>
-    <script type="javascript" src="js/home.js"></script>
+    <script src="${pageContext.request.contextPath}/js/home.js"></script>
     <link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
 <%
     User user = (User) session.getAttribute("user");
-    PostDatabase postData = new PostDatabase(DbConnection.getConnection());
 
-    List<Post> posts = postData.getPosts(user);
 
     if(session.getAttribute("message") != null){%>
         <div class="alert alert-primary" role="alert">
@@ -48,14 +46,17 @@
     if(user == null){
         session.setAttribute("Registration Error", "!!!Please Login first");
         response.sendRedirect("index.jsp");
-    }else{%>
+    }else{
+        PostDatabase postData = new PostDatabase(DbConnection.getConnection());
+        List<Post> posts = postData.getPosts(user);
+    %>
 <!-- ============================================================================================================== -->
 
 <!-- ============================================================================================================== -->
 
         <nav class="navbar navbar-expand-lg navbar-success bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Facebook</a>
+                <a class="navbar-brand" href="#" style="font-size: larger">Facebook</a>
                 <form class="d-flex">
                     <input
                             class="me-2 searchbar"
@@ -107,7 +108,8 @@
                                     role="button"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
-                            ><img src="./image/dipson.jpg" class="pix" alt="" />
+                                    style="color:#fff;"
+                            ><img src="./image/mypicture.jpeg" href="./image/mypicture.jpeg" class="pix" alt="" />
                                 <%=user.getFirstname() +" "+ user.getSurname() %>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -134,7 +136,7 @@
                 <div class="col-lg-3">
                     <div class="fix">
                         <div>
-                            <img src="./image/dipson.jpg" class="pix" alt="" />
+                            <img src="./image/mypicture.jpeg" href="image/mypicture.jpeg" class="pix" alt="" />
                             <p class="yourfeed"><%=user.getFirstname() +" "+ user.getSurname() %> Show</p>
                         </div>
                         <div class="yourfeed1">
@@ -179,7 +181,6 @@
                         </div>
                         <p class="text">Your Shortcuts</p>
                         <img src="" alt="" />
-                        <p class="text">Baba Kamo Alariya</p>
                         <p>
                             <small
                             >Privacy · Terms · Advertising · Ad Choices · Cookies · ·
@@ -189,13 +190,13 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="scroller like-icon">
+                    <div class="scroller like-icon" style="height:  700px">
                         <%
                             for (Post each:posts) {%>
-                                <div class="linear">
+                                <div class="linear" style="background-color: #ffffff">
                                     <div class="titleText">
-                                        <h2><%=each.getTitle()%></h2>
-                                        <p><span style="font-weight: bold; color:#81adef; font-size: 1.4em;margin-right: 5px">Author:</span>
+                                        <h2 style="color: #fff; padding: 10px; background-color: dodgerblue"><%=each.getTitle()%></h2>
+                                        <p style="color: #000; padding: 10px;"><span style="font-weight: bold; font-size: 1.1em;">Author:</span>
                                             <%=each.getName()%></p>
                                     </div>
                                     <img src="./image/<%=each.getImageName()%>" class="majorpix" alt="" />
@@ -206,35 +207,25 @@
                                 <hr>
                                 <div class="comment_like_share mb-2">
                                     <div class="like">
-                                        <%
-                                            if(each.isLikedPost()){%>
-                                                <i onclick="like(<%=each.getId()%>, <%=user.getId()%>)" id="<%=each.getId()%>"
-                                                   style="color: #1977f2" class="fa fa-thumbs-o-up" aria-hidden="true">
-                                                    <span id="like"><%=each.getNoLikes()%></span></i>
-                                                <!-- <span>Like</span> -->
-                                            <%}else{%>
-                                                <i onclick="like(<%=each.getId()%>, <%=user.getId()%>)" id="<%=each.getId()%>"
-                                                   style="color: #fff" class="fa fa-thumbs-o-down" aria-hidden="true">
-                                                    <span id="like1"><%=each.getNoLikes()%></span></i>
-                                                <!-- <span>Like</span> -->
-                                            <%}
-                                        %>
+                                        <i onclick="like(<%=each.getId()%>, <%=user.getId()%>)" id="<%=each.getId()%>"
+                                           style="color: #ffffff" class="fa fa-thumbs-o-up" aria-hidden="true">
+                                            <span class="likes"><%=each.getNoLikes()%></span>
+                                            <span style="display:none;" class="thumb"><%=each.getId()%></span></i>
+                                            <p style="display: none" class="userLiked"><%=each.isLikedPost()%></p>
+
                                     </div>
                                     <div class="comment">
                                         <i class="fa fa-commenting-o" aria-hidden="true" onclick="com(<%=each.getId()%>)">
                                             <span><%=each.getNoComments()%>
                                         </i>
-
-                                        <!-- <span>Comment</span> -->
                                     </div>
                                     <div class="edit">
                                         <i class="fa fa-edit" aria-hidden="true" onclick="edit(<%=each.getId()%>)">
                                         </i>
-                                        <!-- <span>Edit</span> -->
                                     </div>
                                     <div class="delete">
-                                        <i class="fa fa-remove" aria-hidden="true" id="delete" onclick="del(<%=each.getId()%>)"></i>
-                                        <!-- <span>Delete</span> -->
+                                        <i class="fa fa-remove" aria-hidden="true" id="delete" onclick="del(<%=each.getId()%>)">
+                                        </i>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -311,95 +302,6 @@
         ></script>
         <script src="https://use.fontawesome.com/aed9ef824b.js"></script>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script>
-    //edit post
-    function edit(postId){
-        console.log("working now");
-        window.location.href = "/edit.jsp?post="+postId;
-    }
-
-    //comment on post
-    function com(postId){
-        console.log("working now");
-        window.location.href = "/comment.jsp?post="+postId;
-    }
-
-    //like on post
-    function like(postId, userId){
-        //fa fa-thumbs-o-up
-        const like = document.getElementById(postId).className;
-        const URL = "/LikeServlet";
-
-        if(like == "fa fa-thumbs-o-down"){
-            let l = document.getElementById("like");
-            let a = Number(l.innerText);
-            a+=1;
-
-            console.log("a", a)
-            document.getElementById("like").innerText = a+"";
-            document.getElementById(postId).className = "fa fa-thumbs-o-up";
-            document.getElementById(postId).style.color = "#1977f2";
-            const data = {postId, userId, "action": 1}
-
-            ajaxCall(URL, data, 1);
-        }
-        else {
-            let l = document.getElementById("like");
-            let a = Number(l.innerText);
-            a-=1;
-            console.log("b", a)
-            document.getElementById("like1").innerText = a+"";
-            document.getElementById(postId).className = "fa fa-thumbs-o-down";
-            document.getElementById(postId).style.color = "#fff";
-            const data = {postId, userId, "action": 0}
-
-            ajaxCall(URL, data, 0);
-        }
-
-    }
-
-    function ajaxCall(url, dataCall, action){
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: dataCall,
-
-            success: function(data){
-                console.log(data);
-            },
-            error: function(){
-                alert('error liking');
-            }
-        });
-    }
-
-    //delete post
-    function del(postId){
-        console.log("working");
-
-        const delPost = confirm("Are you sure you want to delete post");
-
-        if(delPost){
-            $.ajax({
-                type: 'POST',
-                url: '/DeletePostServlet',
-                data: {"postId": postId},
-
-                success: function(data){
-                    console.log(data);
-
-                    //location.href = "/home.jsp";
-                    window.location.reload();
-                },
-                error: function(){
-                    alert('error deleting post');
-                }
-            });
-
-            alert("Post Successfully deleted");
-        }
-    }
-</script>
     <%}
 %>
 </body>
