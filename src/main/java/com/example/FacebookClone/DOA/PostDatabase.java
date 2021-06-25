@@ -144,7 +144,6 @@ public class PostDatabase {
        boolean success = false;
 
         try {
-            //String query = "update posts set title=newPost.getTitle(), body=newPost.getBody() where id=posjjtId";
             String query = "update posts set title=?, body=? where id=?";
             PreparedStatement prepared = this.dbConnection.prepareStatement(query);
 

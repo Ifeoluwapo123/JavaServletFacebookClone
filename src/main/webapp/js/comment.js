@@ -6,7 +6,7 @@ function del(postId, userId, data){
     console.log(comment);
     console.log(data);
 
-    let delCom = prompt("Are sure you want to delete this comment");
+    let delCom = confirm("Are sure you want to delete this comment");
 
     if(delCom){
         $.ajax({
